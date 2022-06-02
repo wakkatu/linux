@@ -35,6 +35,22 @@
 #define __LINUX_PLATFORM_DATA_MLXREG_H
 
 #define MLXREG_CORE_LABEL_MAX_SIZE	32
+#define MLXREG_CORE_WD_FEATURE_NOWAYOUT		BIT(0)
+#define MLXREG_CORE_WD_FEATURE_START_AT_BOOT	BIT(1)
+
+/**
+ * enum mlxreg_wdt_type - type of HW watchdog
+ *
+ * TYPE1 HW watchdog implementation exist in old systems.
+ * All new systems have TYPE2 HW watchdog.
+ * TYPE3 HW watchdog can exist on all systems with new CPLD.
+ * TYPE3 is selected by WD capability bit.
+ */
+enum mlxreg_wdt_type {
+	MLX_WDT_TYPE1,
+	MLX_WDT_TYPE2,
+	MLX_WDT_TYPE3,
+};
 
 /**
  * struct mlxreg_hotplug_device - I2C device data:
@@ -61,22 +77,26 @@ struct mlxreg_hotplug_device {
  * @reg: attribute register;
  * @mask: attribute access mask;
  * @bit: attribute effective bit;
+ * @capability: attribute capability register;
  * @mode: access mode;
  * @np - pointer to node platform associated with attribute;
  * @hpdev - hotplug device data;
  * @health_cntr: dynamic device health indication counter;
  * @attached: true if device has been attached after good health indication;
+ * @regnum: number of registers occupied by multi-register attribute;
  */
 struct mlxreg_core_data {
 	char label[MLXREG_CORE_LABEL_MAX_SIZE];
 	u32 reg;
 	u32 mask;
 	u32 bit;
+	u32 capability;
 	umode_t	mode;
 	struct device_node *np;
 	struct mlxreg_hotplug_device hpdev;
-	u8 health_cntr;
+	u32 health_cntr;
 	bool attached;
+	u8 regnum;
 };
 
 /**
@@ -86,6 +106,7 @@ struct mlxreg_core_data {
  * @aggr_mask: group aggregation mask;
  * @reg: group interrupt status register;
  * @mask: group interrupt mask;
+ * @capability: group capability register;
  * @cache: last status value for elements fro the same group;
  * @count: number of available elements in the group;
  * @ind: element's index inside the group;
@@ -97,6 +118,7 @@ struct mlxreg_core_item {
 	u32 aggr_mask;
 	u32 reg;
 	u32 mask;
+	u32 capability;
 	u32 cache;
 	u8 count;
 	u8 ind;
@@ -107,14 +129,20 @@ struct mlxreg_core_item {
 /**
  * struct mlxreg_core_platform_data - platform data:
  *
- * @led_data: led private data;
+ * @data: instance private data;
  * @regmap: register map of parent device;
- * @counter: number of led instances;
+ * @counter: number of instances;
+ * @features: supported features of device;
+ * @version: implementation version;
+ * @identity: device identity name;
  */
 struct mlxreg_core_platform_data {
 	struct mlxreg_core_data *data;
 	void *regmap;
 	int counter;
+	u32 features;
+	u32 version;
+	char identity[MLXREG_CORE_LABEL_MAX_SIZE];
 };
 
 /**

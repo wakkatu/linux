@@ -11765,6 +11765,12 @@ static int tg3_open(struct net_device *dev)
 		pci_set_power_state(tp->pdev, PCI_D3hot);
 	}
 
+	if (tg3_asic_rev(tp) == ASIC_REV_5720){
+		/*Fixed ASIC_REV_5720 support 100M/10M feature */
+       __tg3_writephy(tp, 0x8, 0x10, 0x1d0);
+       __tg3_writephy(tp, 0x1f, 0x4, 0x5e1);
+	}
+
 	return err;
 }
 
