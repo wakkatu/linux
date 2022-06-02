@@ -16,7 +16,21 @@ comment "Platform Support"
 config	USB_BDC_PCI
 	tristate "BDC support for PCIe based platforms"
 	depends on USB_PCI
-	default USB_BDC_UDC
+	default n 
 	help
 		Enable support for platforms which have BDC connected through PCIe, such as Lego3 FPGA platform.
+
+config USB_BDC_XGS_IPROC
+	tristate "BDC support for broadcom XGS IPROC platforms"
+	depends on ARCH_XGS_IPROC && USB_GADGET
+	default n
+
+	help
+		Enable support for Broadcom XGS IPROC platforms which have BDC, such
+		as Helix 5 platform.
+
+		Say "y" to link the driver statically, or "m" to build a dynamically
+		linked module called "xgs_iproc_udc" and force all gadget drivers to
+		also be dynamically linked.
+
 endif

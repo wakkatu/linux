@@ -27,6 +27,8 @@
 #include <linux/spinlock.h>
 #include <linux/types.h>
 #include <linux/watchdog.h>
+#include <linux/of_address.h>
+
 
 /* default timeout in seconds */
 #define DEFAULT_TIMEOUT		60
@@ -73,6 +75,24 @@ static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0);
 MODULE_PARM_DESC(nowayout,
 		"Set to 1 to keep watchdog running after device release");
+
+/* This routine get boot status to indicate if the last boot is from WDT */
+static unsigned int wdt_get_clear_bootstatus(
+			void __iomem *wdt_bootstatus,
+			unsigned int wdt_bootstatus_bit)
+{
+	unsigned int reg;
+	unsigned int bootstatus = 0;
+
+	reg = readl_relaxed(wdt_bootstatus);
+	bootstatus = reg & (1 << wdt_bootstatus_bit);
+
+	if (bootstatus)
+		/* write 1 to clear boot status bit */
+		writel_relaxed(reg, wdt_bootstatus);
+
+	return bootstatus;
+}
 
 /* This routine finds load value that will reset system in required timout */
 static int wdt_setload(struct watchdog_device *wdd, unsigned int timeout)
@@ -204,6 +224,8 @@ sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
 {
 	struct sp805_wdt *wdt;
 	int ret = 0;
+	void __iomem *wdt_bootstatus = NULL;
+	unsigned int bootstatus_bit = 0;
 
 	wdt = devm_kzalloc(&adev->dev, sizeof(*wdt), GFP_KERNEL);
 	if (!wdt) {
@@ -214,6 +236,13 @@ sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
 	wdt->base = devm_ioremap_resource(&adev->dev, &adev->res);
 	if (IS_ERR(wdt->base))
 		return PTR_ERR(wdt->base);
+
+  wdt_bootstatus = of_iomap(adev->dev.of_node, 1);
+	if (!wdt_bootstatus) {
+		ret = -ENOMEM;
+		dev_warn(&adev->dev, "of_iomap failed\n");
+		goto err;
+	}
 
 	wdt->clk = devm_clk_get(&adev->dev, NULL);
 	if (IS_ERR(wdt->clk)) {
@@ -240,6 +269,9 @@ sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
 	}
 	amba_set_drvdata(adev, wdt);
 
+  wdt->wdd.bootstatus = wdt_get_clear_bootstatus(
+	                         wdt_bootstatus, bootstatus_bit);
+        
 	dev_info(&adev->dev, "registration successful\n");
 	return 0;
 

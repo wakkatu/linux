@@ -1,0 +1,163 @@
+/dts-v1/;
+
+/ {
+	description = "Linux kernel and FDT blob";
+	#address-cells = <1>;
+
+	images {
+		kernel_iproc {
+			description = "Broadcom iProc Linux";
+			data = /incbin/("../zImage");
+			type = "kernel";
+			arch = "arm";
+			os = "linux";
+			compression = "none";
+			load = <0x61008000>;
+			entry = <0x61008000>;
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+
+		fdt_hx4 {
+			description = "Helix4 Device Tree blob - bcm956340.dtb";
+			data = /incbin/("./bcm956340.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+
+		fdt_kt2 {
+			description = "Katana2 Device Tree blob - bcm956450.dtb";
+			data = /incbin/("./bcm956450.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+		
+		fdt_sb2 {
+			description = "Saber2 Device Tree blob - bcm956260.dtb";
+			data = /incbin/("./bcm956260.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+		
+		fdt_gh {
+			description = "Greyhound Device Tree blob - bcm95341x.dtb";
+			data = /incbin/("./bcm95341x.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+		
+		fdt_hr3 {
+			description = "Hurricane3 Device Tree blob - bcm956160.dtb";
+			data = /incbin/("./bcm956160.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+		
+		fdt_hr3_lite {
+			description = "Hurricane3 Lite Device Tree blob - bcm953444.dtb";
+			data = /incbin/("./bcm953444.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+		
+		fdt_gh2 {
+			description = "Greyhound2 Device Tree blob - bcm956170.dtb";
+			data = /incbin/("./bcm956170.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+		
+		fdt_wh2 {
+			description = "Wolfhound2 Device Tree blob - bcm953547.dtb";
+			data = /incbin/("./bcm953547.dtb");
+			type = "flat_dt";
+			arch = "arm";
+			compression = "none";
+			hash@1 {
+				algo = "crc32";
+			};
+		};
+	};
+
+	configurations {
+		default = "hx4";
+		/* use "bootm 0x64000000#katana2" for booting Katana2 */
+		hx4 {
+			description = "Boot Linux kernel with Helix4 FDT blob ";
+			kernel = "kernel_iproc";
+			fdt = "fdt_hx4";
+		};
+		
+		kt2 {
+			description = "Boot Linux kernel with Katana2 FDT blob ";
+			kernel = "kernel_iproc";
+			fdt = "fdt_kt2";
+		};
+		
+		sb2 {
+			description = "Boot Linux kernel with Saber2 FDT blob ";
+			kernel = "kernel_iproc";
+			fdt = "fdt_sb2";
+		};
+		
+		gh {
+			description = "Boot Linux kernel with Greyhound FDT blob ";
+			kernel = "kernel_iproc";
+			fdt = "fdt_gh";
+		};
+		
+		hr3 {
+			description = "Boot Linux kernel with Hurricane3 FDT blob ";
+			kernel = "kernel_iproc";
+			fdt = "fdt_hr3";
+		};
+		
+		hr3_lite {
+			description = "Boot Linux kernel with Hurricane3 Lite FDT blob ";
+			kernel = "kernel_iproc";
+			fdt = "fdt_hr3_lite";
+		};
+	
+		gh2 {
+			description = "Boot Linux kernel with Greyhound2 FDT blob ";
+			kernel = "kernel_iproc";
+			fdt = "fdt_gh2";
+		};
+		
+		wh2 {
+			description = "Boot Linux kernel with Wolfhound2 FDT blob ";
+			kernel = "kernel_iproc";
+			fdt = "fdt_wh2";
+		};
+	
+	};
+};

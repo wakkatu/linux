@@ -198,6 +198,14 @@ config LED_TRIGGER_PHY
 		<Speed in megabits>Mbps or <Speed in gigabits>Gbps
 
 
+config MDIO_XGS_IPROC
+	tristate "Broadcom XGS iProc MDIO bus controller"
+	depends on ARCH_XGS_IPROC || COMPILE_TEST
+	depends on HAS_IOMEM && OF_MDIO
+	help
+	  This module provides a driver for the MDIO busses found in the
+	  Broadcom XGS iProc SoC's.
+
 comment "MII PHY device drivers"
 
 config SFP
@@ -261,6 +269,12 @@ config BROADCOM_PHY
 	---help---
 	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
 	  BCM5481, BCM54810 and BCM5482 PHYs.
+
+config XGS_IPROC_SERDES
+	tristate "Broadcom XGS iProc SERDES"
+	depends on MDIO_XGS_IPROC
+	---help---
+	  Supports HX4/KT2/GH2 SERDES.
 
 config CICADA_PHY
 	tristate "Cicada PHYs"

@@ -7,3 +7,5 @@ ifneq ($(CONFIG_USB_GADGET_VERBOSE),)
 endif
 
 obj-$(CONFIG_USB_BDC_PCI)	+= bdc_pci.o
+obj-$(CONFIG_USB_BDC_XGS_IPROC)   += bdc_xgs_iproc.o
+

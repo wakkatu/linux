@@ -218,8 +218,10 @@ static int pca954x_deselect_mux(struct i2c_mux_core *muxc, u32 chan)
 	struct pca954x *data = i2c_mux_priv(muxc);
 	struct i2c_client *client = data->client;
 
+#if !defined(CONFIG_I2C_MUX_PCA954X_DESELECT_ON_EXIT)
 	if (!(data->deselect & (1 << chan)))
 		return 0;
+#endif
 
 	/* Deselect active channel */
 	data->last_chan = 0;
